@@ -1,4 +1,4 @@
-import pygame
+import pygame # type: ignore
 import sys
 import os
 sys.path.append(os.path.dirname(__file__))
@@ -28,12 +28,17 @@ background_game = pygame.image.load("Assets/mesa_fondo.PNG")
 
 background_game = pygame.transform.scale(background_game, (SCREEN_WIDTH, SCREEN_HEIGHT))
 #fuente de texto
-font = pygame.font.Font(None, 50)
 
 #funcion para mostrar texto
-def draw_text(text, x, y, color=WHITE):
+def draw_text(text, x, y, color=WHITE, font=None, center=False):
+    if font is None:
+        font = pygame.font.Font(None, 50)
     text_surface = font.render(text, True, color)
-    screen.blit(text_surface, (x, y))
+    if center:
+        text_rect = text_surface.get_rect(center=(x, y))  # Centra el texto
+        screen.blit(text_surface, text_rect)
+    else:
+        screen.blit(text_surface, (x, y))
 
 #funcion para crear un boton
 def draw_button(text, x, y, width, height, color, text_color):
@@ -43,6 +48,14 @@ def draw_button(text, x, y, width, height, color, text_color):
     draw_text(text, x + width // 3.75, y + height // 4.6, text_color)
     return button_rect
 
+def draw_bet_circle(x=0, y=0, radius=55, text_color=WHITE, border_color=WHITE):
+    pygame.draw.circle(screen, border_color, (SCREEN_WIDTH // 2 - 80, SCREEN_HEIGHT * 0.72), radius, 3)
+    pygame.draw.circle(screen, border_color, (SCREEN_WIDTH/2 + 80, SCREEN_HEIGHT*0.72), radius, 3)
+    circle_font = pygame.font.Font(None, 30)  # Cambia el tamaño a 30
+
+    draw_text("Apuesta", SCREEN_WIDTH//2 + 80, SCREEN_HEIGHT * 0.72, text_color, font=circle_font, center=True)  # Etiqueta de la apuesta
+    draw_text("Doblar", SCREEN_WIDTH//2 - 80, SCREEN_HEIGHT * 0.72, text_color, font=circle_font, center=True)  # Etiqueta de la apuesta
+    
 #bara de carga
 def draw_loading_bar(progress, x, y, width, height):
     pygame.draw.rect(screen, GRAY, (x, y, width, height))  #fondo
@@ -73,7 +86,7 @@ def draw_deck():
 
 ruta_imagen = "Assets/packcartas/Back_Red_1.png"
 
-def draw_card_deck(ruta_imagen="Assets/packcartas/Back_Red_1.png",x=320,y=285, w=100, h=150):
+def draw_card_deck(ruta_imagen,x=320,y=285, w=100, h=150):
     
     # Cargar la imagen del mazo
     deck_image = pygame.image.load(ruta_imagen)
@@ -81,6 +94,15 @@ def draw_card_deck(ruta_imagen="Assets/packcartas/Back_Red_1.png",x=320,y=285, w
 
     # Dibujar la imagen en la pantalla
     screen.blit(deck_image, (x, y))
+    
+def draw_button(ruta_imagen, x,y, w=264,h=76):
+    
+    # Cargar la imagen del mazo
+    deck_image = pygame.image.load(ruta_imagen)
+    deck_image = pygame.transform.scale(deck_image, (w, h))  # Escalar la imagen al tamaño deseado
+    # Dibujar la imagen en la pantalla
+    screen.blit(deck_image, (x, y))
+    
     
 def loading_screen():
     clock = pygame.time.Clock()
@@ -107,6 +129,7 @@ def game_screen():
         draw_card_positions()
         draw_deck()
         draw_card_deck()
+        draw_bet_circle()
 
         # Eventos
         for event in pygame.event.get():
@@ -126,8 +149,10 @@ def main_menu():
         screen.blit(background_main, (0, 0))  # Fondo de la pantalla principal
 
         # Dibujar botones
-        play_button = draw_button("Jugar", SCREEN_WIDTH // 2.55 - 100, SCREEN_HEIGHT // 2 + 80, 210, 62, BLACK, GREEN)
-        quit_button = draw_button(" Salir", SCREEN_WIDTH // 1.75 - 100, SCREEN_HEIGHT // 2 + 80, 210, 62, BLACK, RED)
+        #play_button = draw_button("Jugar", SCREEN_WIDTH // 2.55 - 100, SCREEN_HEIGHT // 2 + 80, 210, 62, BLACK, GREEN)
+        #quit_button = draw_button(" Salir", SCREEN_WIDTH // 1.75 - 100, SCREEN_HEIGHT // 2 + 80, 210, 62, BLACK, RED)
+        draw_button("Assets/jugar_negro.png", SCREEN_WIDTH // 2.55 - 100, 450)
+        draw_button("Assets/salir_negro.png", SCREEN_WIDTH // 1.75 - 100, 450)
 
         # Eventos
         for event in pygame.event.get():
